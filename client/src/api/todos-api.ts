@@ -3,6 +3,7 @@ import { Todo } from '../types/Todo';
 import { CreateTodoRequest } from '../types/CreateTodoRequest';
 import Axios from 'axios'
 import { UpdateTodoRequest } from '../types/UpdateTodoRequest';
+import { UpdateTodoNameRequest } from '../types/UpdateTodoNameRequest';
 
 export async function getTodos(idToken: string): Promise<Todo[]> {
   console.log('Fetching todos')
@@ -77,6 +78,20 @@ export async function updateAttachmentUrl(
   todoId: string
 ): Promise<void> {
   await Axios.patch(`${apiEndpoint}/todos/${todoId}/attachment`, '', {
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${idToken}`
+    }
+  })
+}
+
+
+export async function putTodo(
+  idToken: string,
+  todoId: string,
+  updatedTodo: UpdateTodoNameRequest
+): Promise<void> {
+  await Axios.put(`${apiEndpoint}/todos/${todoId}`, JSON.stringify(updatedTodo), {
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${idToken}`

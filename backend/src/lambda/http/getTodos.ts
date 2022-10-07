@@ -1,13 +1,14 @@
 import "source-map-support/register";
 import {
-  APIGatewayProxyHandler,
   APIGatewayProxyEvent,
   APIGatewayProxyResult,
 } from "aws-lambda";
 import { getTodosByUserId } from "../../bussinessLogic/todos";
 import { getUserId } from "../utils";
+import { cors, httpErrorHandler } from "middy/middlewares";
+import * as middy from "middy";
 
-export const handler: APIGatewayProxyHandler = async (
+export const handler = middy(async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
   console.log("Get todo", event);
@@ -18,12 +19,14 @@ export const handler: APIGatewayProxyHandler = async (
 
   return {
     statusCode: 200,
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Credentials': true
-    },
     body: JSON.stringify({
       items,
     }),
   };
-};
+})
+
+handler.use(httpErrorHandler()).use(
+  cors({
+    credentials: true,
+  })
+);

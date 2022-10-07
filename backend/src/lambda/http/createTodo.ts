@@ -1,26 +1,31 @@
-import 'source-map-support/register';
+import "source-map-support/register";
 
-import { APIGatewayProxyHandler, APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-import { createTodo } from '../../bussinessLogic/todos';
-import { CreateTodoRequest } from '../../requests/CreateTodoRequest';
-import { getUserId } from '../utils';
+import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
+import * as middy from "middy";
+import { createTodo } from "../../bussinessLogic/todos";
+import { CreateTodoRequest } from "../../requests/CreateTodoRequest";
+import { getUserId } from "../utils";
+import { cors, httpErrorHandler } from "middy/middlewares";
 
-export const handler : APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+export const handler = middy(
+  async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+    const createTodoRequest: CreateTodoRequest = JSON.parse(event.body);
 
-  const createTodoRequest : CreateTodoRequest = JSON.parse(event.body);
+    const userId = getUserId(event);
 
-  const userId = getUserId(event);
+    const item = await createTodo(createTodoRequest, userId);
 
-  const item = await createTodo(createTodoRequest, userId);
+    return {
+      statusCode: 200,
+      body: JSON.stringify({
+        item,
+      }),
+    };
+  }
+);
 
-  return {
-    statusCode: 200,
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Credentials': true
-    },
-    body: JSON.stringify({
-      item
-    })
-  };
-}
+handler.use(httpErrorHandler()).use(
+  cors({
+    credentials: true,
+  })
+);

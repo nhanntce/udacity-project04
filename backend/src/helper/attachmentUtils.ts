@@ -21,6 +21,24 @@ export class AttachMentUtils {
       Expires: parseInt(this.TIME_EXPIRATION),
     });
   }
+
+  async isObjectExisted(objectKey: string) {
+    return this.S3_CLIENT.headObject({
+      Bucket: this.BUCKET_NAME,
+      Key: objectKey
+    })
+    .promise()
+    .then(() => true)
+    .catch(() => false);
+  }
+
+  async deleteObject(objectKey: string) {
+    this.S3_CLIENT.deleteObject({
+      Bucket: this.BUCKET_NAME,
+      Key: objectKey
+    })
+    .promise();
+  }
 }
 
 function createS3Client() {

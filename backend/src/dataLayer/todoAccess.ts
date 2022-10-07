@@ -98,6 +98,24 @@ export class TodoAccess {
       .promise();
 
   }
+
+  async updateTodoName(userId: string, todoId: string, name: string): Promise<void> {
+    log.info(`[START] Update todo name`);
+    await this.docClient
+      .update({
+        TableName: this.todoTable,
+        Key: { todoId, userId },
+        UpdateExpression:
+          "set #name = :name",
+        ExpressionAttributeNames: {
+          "#name": "name",
+        },
+        ExpressionAttributeValues: {
+          ":name":name,
+        }
+      })
+      .promise();
+  }
 }
 
 function createDynamoDBClient() {

@@ -44,6 +44,10 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
     this.props.history.push(`/todos/${todoId}/edit`)
   }
 
+  onEditTodoNameButtonClick = (todoId: string, currentName: string) => {
+    this.props.history.push(`/todos/${todoId}/edit-name/${currentName}`)
+  }
+
   onTodoCreate = async (event: React.ChangeEvent<HTMLButtonElement>) => {
     try {
       const dueDate = this.calculateDueDate()
@@ -168,13 +172,27 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
                   checked={todo.done}
                 />
               </Grid.Column>
-              <Grid.Column width={10} verticalAlign="middle">
+              <Grid.Column width={3} floated="left" verticalAlign="middle">
+                {todo.attachmentUrl && (
+                  <Image src={todo.attachmentUrl} size="small" wrapped />
+                )}
+              </Grid.Column>
+              <Grid.Column width={1} floated="left" verticalAlign="middle">
+                <Button
+                  icon
+                  color="grey"
+                  onClick={() => this.onEditTodoNameButtonClick(todo.todoId, todo.name)}
+                >
+                  <Icon name="edit" />
+                </Button>
+              </Grid.Column>
+              <Grid.Column width={7} verticalAlign="middle">
                 {todo.name}
               </Grid.Column>
-              <Grid.Column width={3} floated="right">
+              <Grid.Column width={2} floated="right" verticalAlign="middle">
                 {todo.dueDate}
               </Grid.Column>
-              <Grid.Column width={1} floated="right">
+              <Grid.Column width={1} floated="right" verticalAlign="middle">
                 <Button
                   icon
                   color="blue"
@@ -183,7 +201,7 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
                   <Icon name="pencil" />
                 </Button>
               </Grid.Column>
-              <Grid.Column width={1} floated="right">
+              <Grid.Column width={1} floated="right" verticalAlign="middle">
                 <Button
                   icon
                   color="red"
@@ -192,9 +210,7 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
                   <Icon name="delete" />
                 </Button>
               </Grid.Column>
-              {todo.attachmentUrl && (
-                <Image src={todo.attachmentUrl} size="small" wrapped />
-              )}
+              
               <Grid.Column width={16}>
                 <Divider />
               </Grid.Column>

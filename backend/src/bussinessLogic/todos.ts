@@ -49,6 +49,10 @@ const updateTodo = async (
 
 const deleteTodo = async (userId: string, todoId: string): Promise<void> => {
   await todoAccess.deleteTodo(userId, todoId);
+  const objectExisted = await attachmentUtils.isObjectExisted(todoId);
+  if(objectExisted) {
+    await attachmentUtils.deleteObject(todoId);
+  }
 };
 
 const createPresignedUrl = async (fileName: string): Promise<string> => {
@@ -60,11 +64,20 @@ const updateAttachmentUrl = async (todoId: string, userId: string): Promise<void
   await todoAccess.updateAttachmentUrl(todoId, userId, attachmentUrl);
 };
 
+const updateTodoName = async (
+  userId: string,
+  todoId: string,
+  name: string
+): Promise<void> => {
+  await todoAccess.updateTodoName(userId, todoId, name);
+};
+
 export {
   getTodosByUserId,
   createTodo,
   updateTodo,
   deleteTodo,
   createPresignedUrl,
-  updateAttachmentUrl
+  updateAttachmentUrl, 
+  updateTodoName
 };

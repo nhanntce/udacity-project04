@@ -3,11 +3,12 @@ import "source-map-support/register";
 import {
   APIGatewayProxyEvent,
   APIGatewayProxyResult,
-  APIGatewayProxyHandler,
 } from "aws-lambda";
 import { createPresignedUrl } from "../../bussinessLogic/todos";
+import { cors, httpErrorHandler } from "middy/middlewares";
+import * as middy from "middy";
 
-export const handler: APIGatewayProxyHandler = async (
+export const handler = middy(async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
   const todoId = event.pathParameters.todoId;
@@ -16,12 +17,15 @@ export const handler: APIGatewayProxyHandler = async (
 
   return {
     statusCode: 200,
-    headers: {
-      "Access-Control-Allow-Origin": "*",
-      'Access-Control-Allow-Credentials': true
-    },
     body: JSON.stringify({
         uploadUrl
     })
   };
-};
+})
+
+
+handler.use(httpErrorHandler()).use(
+  cors({
+    credentials: true,
+  })
+);
